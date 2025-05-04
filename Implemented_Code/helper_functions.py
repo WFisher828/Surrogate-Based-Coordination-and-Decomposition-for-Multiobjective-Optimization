@@ -253,9 +253,10 @@ def LSE(X,Y):
 
     return np.linalg.inv(X.T @ X)@(X.T)@Y
 
-def construct_R(X,Y):
+def construct_R(X,Y,const = 10**(-6)):
     #X: An NxM numpy matrix representing the model matrix
     #Y: An Nx1 numpy array representing the responses.
+    #const: A small constant to ensure numerical stability of the decompostion algorithm later on.
     
     N = len(X)
     M = len(X.T)
@@ -267,7 +268,7 @@ def construct_R(X,Y):
 
     for n in range(N):
         for m in range(M):
-            R[n,m] = X[n,m]*lse[m]
+            R[n,m] = X[n,m]*lse[m] + const
 
     return R,lse
 
@@ -305,7 +306,7 @@ def decomp_non_neg_garrote(F,R,Z,D,gamma,lam,kappa,t = 50):
     return [Theta.X,model.objVal]
 
 #THIS IS THE MODEL WE WILL USE! IT DOES NOT RELY ON PARAMETER TUNINING OR COORDINATE EXCHANGE!
-def decomp_orthog(F,R,D,K,t=50,theta_ub = 20.0,focus = 0):
+def decomp_orthog(F,R,D,K,t=50,theta_ub = 20.0,focus = 0,outputflag = 0):
     #F - This is a JxN numpy matrix of responses where F_jn is the nth response of objective function j.
     #R - This is a list with J entries, each entry is a NxM numpy matrix where R[j]_nm is X_nm*Beta_jm. We will typically assume a response surface model for X.
     #D - This is a list of lists of lists. There are J second layer lists, and within each second layer list there are M lists. List D[j][m] holds information on which predictors should be included in the function j if predictor m in function j is included. For example in the strong heredity case, For function 1 if predictor 1 and predictor 2 are x_1 and x_2, and predictor 3 is x_1*x_2, predictor 4 is x_1^2 and predictor 5 is x_2^2, Then D[0][0] = [], D[0][1] = [], D[0][2] = [0,1], D[0][3] = [0], D[0][4] = [1]
@@ -319,6 +320,7 @@ def decomp_orthog(F,R,D,K,t=50,theta_ub = 20.0,focus = 0):
     model = gp.Model("decomp_orthog")
     model.setParam('Timelimit', t)
     model.setParam('MIPFocus', focus)
+    model.setParam('OutputFlag', outputflag)
 
     Theta = model.addMVar((J,M),lb=0.0, ub=theta_ub, vtype=GRB.CONTINUOUS, name="Theta")
     Z = model.addMVar((J,K), vtype=GRB.BINARY, name = "Z")
