@@ -135,9 +135,9 @@ response_simulator <- function(vehicle_attributes){
     Lower_Cargo_Storage_Volume_in3 <- 0
   }else if(vehicle_attributes[5] == 2){ #MUTT
     Lower_Cargo_Storage_Volume_in3 <- SMET_Platform_Length_in*vehicle_attributes[7]*vehicle_attributes[4]
-  }else if(vehicle_attributes[3] == 1){ #Flush with frame  #Get rid of later
-    Lower_Cargo_Width_in <- SMET_Platform_Width_in #Get rid of later
-  }else if(vehicle_attributes[3] == 2){ #Hanging over frame #Get rid of later
+  }else if(vehicle_attributes[3] == 1){ #Flush with frame  
+    Lower_Cargo_Width_in <- SMET_Platform_Width_in 
+  }else if(vehicle_attributes[3] == 2){ #Hanging over frame 
     Lower_Cargo_Width_in <- SMET_Platform_Width_in + 2*Input_Constants[49] #Get rid of later
   }else if(vehicle_attributes[5] == 3){ #Protector
     Lower_Cargo_Storage_Volume_in3 <- SMET_Platform_Length_in - 0.65*vehicle_attributes[6] -
